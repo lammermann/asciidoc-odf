@@ -34,7 +34,7 @@ class odt_archive:
             bz.extractall(td)
             cx = os.path.join(td,"content.xml")
             if os.path.exists(cx) : os.remove(cx)
-            shell( '%s --backend=odt -a "a2x-format=%s" -a not_flat_odf %s --out-file "%s" %s' %
+            shell( '%s --backend=odt -a "a2x-format=%s" -a not_flat_odf %s --out-file "%s" "%s"' %
                 (self.a2x.asciidoc, self.a2x.format, self.a2x.asciidoc_opts, cx, doc))
             if not self.a2x.no_xmllint and XMLLINT and schema:
                 o,e,r = shell('"%s" --nonet --noout --valid --relaxng "%s" "%s"' % (XMLLINT, schema, cx), false)
@@ -81,8 +81,14 @@ class odt_archive:
                 oz.close()
 
 def to_odt(self):
-    opts = AttrDict(base_doc=os.path.join(CONF_DIR, 'backends', 'odt', 'asciidoc.ott'),
-                    temp_dir=None, schema=None) # TODO set schema default location
+    def getpardir(obj=None):
+        import inspect
+        if obj is None:
+            obj = inspect.stack()[1][0]
+        return os.path.dirname(inspect.getfile(obj))
+
+    opts = AttrDict(base_doc=os.path.join(getpardir(), 'asciidoc.ott'),
+            temp_dir=None, schema=None) # TODO set schema default location
     u = [ o.strip().split('=') for o in self.backend_opts.strip().split('--') if o != '' ]
     opts.update(u)
     if opts.base_doc is None:
