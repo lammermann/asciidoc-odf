@@ -1,0 +1,7 @@
+*.fodt
+*.odt
+*.fodp
+*.odp
+*~
+.*.swp
+*.pyc
